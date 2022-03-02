@@ -6,4 +6,5 @@ import java.util.List;
 public interface CacheService {
     void putCache(String key, List<String> value);
     Iterator<String> getCache(String key);
+    Iterator<String> getAllCache();
 }

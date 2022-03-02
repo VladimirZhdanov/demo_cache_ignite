@@ -6,12 +6,12 @@ import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.Arrays;
 import java.util.Iterator;
-import java.util.List;
 
 @RestController
 @RequestMapping("/")
@@ -22,16 +22,30 @@ public class TestController {
 
     private final CacheService cacheService;
 
-    @GetMapping("/status/check")
-    public String status() {
-        cacheService.putCache("23432242", Arrays.asList("Test 123", "Test 321"));
+    @GetMapping("/put/{id}")
+    public String put(@PathVariable String id) {
+        cacheService.putCache(id, Arrays.asList("Test " + id, "Test " + id));
+        return "Done";
+    }
 
-        Iterator<String> cache = cacheService.getCache("23432242");
+    @GetMapping("/get/{id}")
+    public String get(@PathVariable String id) {
+        Iterator<String> cache = cacheService.getCache(id);
 
         while (cache.hasNext()) {
             LOGGER.info(cache.next());
         }
 
-        return "Working ...";
+        return "Done";
+    }
+
+    @GetMapping("/get")
+    public String get() {
+        Iterator<String> cache = cacheService.getAllCache();
+
+        while (cache != null && cache.hasNext()) {
+            LOGGER.info(cache.next());
+        }
+        return "Done";
     }
 }
