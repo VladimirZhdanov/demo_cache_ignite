@@ -14,7 +14,6 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
-import java.sql.Timestamp;
 import java.util.Iterator;
 import java.util.List;
 
@@ -34,7 +33,7 @@ public class CacheServiceImpl implements CacheService {
     public void putCache(String key, List<String> value) {
         try (IgniteDataStreamer<IgniteKey, IgniteValue> streamer = ignite.dataStreamer(cacheName)) {
             for (int i = 0; i < value.size(); i++) {
-                streamer.addData(new IgniteKey(key, i), new IgniteValue(value.get(i), new Timestamp(System.currentTimeMillis())));
+                streamer.addData(new IgniteKey(key, i), new IgniteValue(value.get(i)));
             }
         }
         LOGGER.info(value.size() + " records added to cache");
@@ -56,7 +55,7 @@ public class CacheServiceImpl implements CacheService {
     public Iterator<String> getAllCache() {
         LOGGER.info("Hitting get all cache");
         IgniteCache<Object, Object> cache = ignite.getOrCreateCache(cacheName);
-        String query = "SELECT specificRecord, created FROM IgniteValue";
+        String query = "SELECT * FROM IgniteValue";
         LOGGER.info("Cache Query: " + query);
         Query<List<?>> sqlFieldsQuery = new SqlFieldsQuery(query);
         Iterator<List<?>> result = cache.query(sqlFieldsQuery).iterator();
@@ -65,12 +64,13 @@ public class CacheServiceImpl implements CacheService {
     }
 
     @Scheduled(fixedRate = 5000)
-    public void scheduleFixedDelayTask() {
+    @Override
+    public void clean() {
         LOGGER.info("Hitting scheduled job");
         IgniteCache<Object, Object> cache = ignite.getOrCreateCache(cacheName);
-        String query = "DELETE FROM IgniteValue WHERE created < dateadd(day, -3, current_timestamp())";
+        String query = "DELETE FROM IgniteValue WHERE created < dateadd(minute, -1, current_timestamp())";
 
-        cache.query(new SqlFieldsQuery(query)).getAll();
+        cache.query(new SqlFieldsQuery(query));
         LOGGER.info("Cleaning cache...");
     }
 

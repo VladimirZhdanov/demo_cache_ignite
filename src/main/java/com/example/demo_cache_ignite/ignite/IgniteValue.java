@@ -17,5 +17,5 @@ public class IgniteValue implements Serializable {
     private final String specificRecord;
 
     @QuerySqlField(index = true)
-    private final Timestamp created;
+    private final Timestamp created = new Timestamp(System.currentTimeMillis());
 }

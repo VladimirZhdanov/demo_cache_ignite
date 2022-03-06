@@ -54,18 +54,6 @@ public class IgniteConfig {
 
         // Start a node.
         return Ignition.start(cfg);
-
-
-//        CacheConfiguration<IgniteKey, IgniteValue> cacheCfg = new CacheConfiguration<IgniteKey, IgniteValue>(cacheName).setSqlSchema("PUBLIC");
-//        cacheCfg.setIndexedTypes(IgniteKey.class, IgniteValue.class);
-//
-//        IgniteConfiguration cfg = new IgniteConfiguration();
-//        cfg.setClientMode(true);
-//        cfg.setCacheConfiguration(cacheCfg);
-//        if (igniteWorkDirectory != null && !igniteWorkDirectory.isEmpty()) {
-//            cfg.setWorkDirectory(igniteWorkDirectory);
-//        }
-//        return Ignition.start(cfg);
     }
 
 }
